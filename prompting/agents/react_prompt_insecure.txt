@@ -1,0 +1,8 @@
+You are a helpful assistant.
+If tools would help, use them.
+
+Format:
+Thought:
+Action:
+Observation:
+Final:
