@@ -252,155 +252,135 @@ Key takeaway: few-shot is most powerful when the correct classification depends 
 
 ## Lab 3: Production Prompt Engineering (12 minutes)
 
-**Goal**: Build a structured, constrained prompt that produces consistent JSON output suitable for integration into a real system — and see exactly where unstructured prompts break down.
+**Goal**: Build a structured, constrained prompt that produces consistent, machine-parseable JSON output suitable for feeding into a real system.
 
-**What you'll learn**: How to combine role, structure, constraints, and format specifications to create production-grade prompts. Why "it mostly works" isn't good enough for systems that consume AI output.
+**What you'll learn**: How to combine schema, role, and constraints to create production-grade prompts — and why each layer solves a different problem.
 
 ### Steps
 
-**Step 1 — Expose the inconsistency of loose prompts.** Paste this prompt to document a user registration endpoint:
+**Step 1 — Start with a loose prompt.** Paste this in your AI chat:
 
 ```
-Write an API documentation entry for a user registration endpoint.
+Write a product changelog entry for this feature: We added the ability for users to export their dashboard data as a CSV file.
 ```
 
-Now, **in a new conversation**, paste this for a different endpoint:
+Look at what you got. Now imagine you need to feed this into an automated system that:
+- Displays it on a release notes page
+- Sends notification emails to affected users
+- Categorizes it in a searchable changelog database
 
-```
-Write an API documentation entry for a password reset endpoint.
-```
-
-Compare the two outputs side by side:
-- Did they use the same format? (Probably not — one might be markdown, the other prose, another might use tables.)
-- Did they cover the same fields? (One might mention error codes, the other might skip them.)
-- Could a script parse both outputs the same way? (Almost certainly not.)
-
-This is the core problem: without structure, every output is a snowflake.
+Could a script extract the feature title, category, affected product area, and whether users need to do anything? The output is human-readable — but it's not machine-parseable. That's the gap this lab addresses.
 
 **Step 2 — Define structured JSON output.** Now specify exactly what you want:
 
 ```
-Task: Generate API documentation for a REST endpoint.
+Task: Generate a product changelog entry for a software feature.
 
 Output as JSON with exactly this schema:
 {
-  "endpoint": "/path",
-  "method": "GET|POST|PUT|DELETE",
-  "description": "One sentence describing what this endpoint does",
-  "parameters": [
-    {
-      "name": "param_name",
-      "type": "string|integer|boolean|object",
-      "required": true|false,
-      "description": "What this parameter does"
-    }
-  ],
-  "response": {
-    "status_code": 200,
-    "body": { "example": "response" }
-  },
-  "errors": [
-    { "status_code": 400, "message": "Error description" }
-  ]
+  "title": "Short feature title",
+  "type": "feature|improvement|bugfix|breaking_change",
+  "description": "One paragraph describing what changed and why",
+  "affected_areas": ["list", "of", "product", "areas"],
+  "user_action_required": true|false,
+  "details": "Technical details or migration steps if needed"
 }
 
-Document this endpoint: User Registration - creates a new user account with email and password.
+Feature: We added the ability for users to export their dashboard data as a CSV file.
 ```
 
 **Step 3 — Validate the output.** Check the JSON response:
 - Is it valid JSON? (Copy it into jsonlint.com or any JSON validator.)
 - Does it match the schema exactly?
-- Are all fields present?
+- Are all fields present with reasonable values?
 
-Now run it for the password reset endpoint too. Are both outputs structurally identical? This is the improvement — but we're not done.
+Compare this to your Step 1 output. The Step 1 prose was human-readable but unparseable. The Step 2 JSON is machine-parseable — a script can extract every field. That's the first layer solved: *structure*.
 
-**Step 4 — Find what the schema alone doesn't control.** Look closely at your Step 2 outputs:
-- Are the descriptions a consistent length, or is one a sentence and another a paragraph?
-- Are the parameter names formatted consistently (snake_case, camelCase, or mixed)?
-- Is the example response data realistic ("john@email.com") or generic ("string", "example")?
-- How many error cases did it include — 1? 3? 5?
+But look closely at the quality...
+
+**Step 4 — Find what the schema alone doesn't control.** Run the Step 2 prompt for two more features:
+
+```
+Feature: We redesigned the notification preferences page so users can choose per-channel settings for email, SMS, and in-app alerts.
+```
+```
+Feature: We fixed a bug where the search bar would return no results if the query contained special characters like & or #.
+```
+
+Now compare all three JSON outputs:
+- Are the descriptions a consistent length, or is one a sentence and another a full paragraph?
+- Are the titles formatted consistently (sentence case? title case? with or without a period?)?
+- Is the "details" field useful, or did the model just repeat the description?
+- Did the model correctly identify "type" for each? (CSV export = feature, notification redesign = improvement, search fix = bugfix)
 
 The schema controls *structure* but not *quality*. That's what constraints are for.
 
 **Step 5 — Add role and constraints for quality.** Enhance the prompt:
 
 ```
-Role: You are a senior API technical writer who produces documentation that passes automated schema validation. You prioritize accuracy and completeness over brevity.
+Role: You are a technical writer producing changelog entries that will be displayed in the product's release notes page and consumed by an automated notification system. Every entry must follow the exact same format so the system can parse and categorize them.
 
-Task: Generate API documentation for a REST endpoint.
+Task: Generate a product changelog entry.
 
 Output as JSON with exactly this schema:
 {
-  "endpoint": "/path",
-  "method": "GET|POST|PUT|DELETE",
-  "description": "One sentence, max 20 words, starting with a verb",
-  "parameters": [
-    {
-      "name": "param_name (snake_case only)",
-      "type": "string|integer|boolean|object",
-      "required": true|false,
-      "description": "Max 15 words"
-    }
-  ],
-  "response": {
-    "status_code": 200,
-    "body": { "realistic_example": "with actual sample data" }
-  },
-  "errors": [
-    { "status_code": 400, "message": "Specific, actionable error message" }
-  ],
-  "authentication": "none|api_key|bearer_token|oauth2",
-  "rate_limit": "requests per minute"
+  "title": "Max 10 words, no period, sentence case",
+  "type": "feature|improvement|bugfix|breaking_change",
+  "description": "Exactly 2-3 sentences. First sentence: what changed. Second sentence: why it matters to the user. Third sentence (optional): any context.",
+  "affected_areas": ["1-4 product areas, lowercase, use standard names: dashboard, settings, search, auth, billing, notifications, api, reports"],
+  "user_action_required": true|false,
+  "details": "If user_action_required is true, specific steps the user must take. If false, set to null."
 }
 
 Constraints:
 - Output ONLY valid JSON, no markdown formatting, no explanation before or after
-- Include at least 3 error cases
-- All example data must be realistic (no "example" or "test" placeholders)
-- Parameter names must use snake_case
+- Title must be under 10 words with no trailing period
+- Description must be exactly 2-3 sentences (no more, no less)
+- affected_areas must use only the standard area names listed above
+- If no user action is required, "details" must be null (not an empty string, not a repeated description)
+- type must accurately reflect the change: new capability = feature, enhancement to existing = improvement, fix = bugfix, requires migration = breaking_change
 
-Document this endpoint: User Registration - creates a new user account with email, password, and optional display name.
+Feature: We added the ability for users to export their dashboard data as a CSV file.
 ```
 
-**Step 6 — Compare Step 2 vs. Step 5.** Run the constrained prompt for both endpoints (registration and password reset). Now compare against your Step 2 outputs:
-- Are descriptions now consistently concise (under 20 words, starting with a verb)?
-- Are parameter names all snake_case?
-- Do you get exactly 3+ error cases every time?
-- Is the example data realistic instead of placeholder text?
+**Step 6 — Compare Step 4 vs. Step 5.** Run the constrained prompt for all three features. Now compare against your Step 4 (schema-only) outputs:
+- Are titles now consistently under 10 words in sentence case?
+- Are descriptions exactly 2-3 sentences every time?
+- Is the "details" field null for non-action items (instead of repeating information)?
+- Did the constrained version correctly use the standardized area names?
 
 The constraints closed the quality gaps that the schema alone left open.
 
-**Step 7 — Stress-test with a complex endpoint.** Test with:
+**Step 7 — Stress-test with a complex feature.** Test with:
 
 ```
-Document this endpoint: Search Products - searches the product catalog by keyword with pagination and filtering by category and price range.
+Feature: We migrated the authentication system from session-based cookies to JWT tokens. Existing sessions will be invalidated on March 15. Users will need to log in again, and any API integrations using session cookies must be updated to use bearer tokens. The new system supports refresh tokens with a 30-day expiry.
 ```
 
-This endpoint has many more parameters. Does the prompt handle the increased complexity correctly? Are all the constraint rules still followed?
+This is a breaking change with multiple user impacts. Does the prompt correctly identify type as "breaking_change", set user_action_required to true, and provide useful migration details?
 
-**Step 8 — Stress-test with a minimal endpoint.** Now try the opposite extreme:
+**Step 8 — Stress-test with a minimal change.** Now try a trivial update:
 
 ```
-Document this endpoint: Health Check - returns server status (no parameters needed).
+Feature: Fixed a typo in the footer — "Contant Us" now correctly reads "Contact Us".
 ```
 
-Does the prompt handle a zero-parameter endpoint gracefully, or does it hallucinate unnecessary parameters? If it does, how would you modify the prompt to handle this? (Hint: you could add a constraint like "If the endpoint has no parameters, use an empty array.")
+Does the prompt handle this gracefully? Does it classify it correctly as a bugfix? Does it avoid inflating a one-word typo into a multi-sentence description?
 
-**Step 9 — Build your validation checklist.** Based on everything you've seen, write a checklist you could hand to a colleague (or encode in a script) to validate any output:
+**Step 9 — Build your validation checklist.** Based on your constraints, write a checklist you could hand to a colleague (or encode in a script) to validate any output:
 1. Valid JSON that parses without errors?
 2. All required fields present with correct types?
-3. Descriptions within word limits and starting with a verb?
-4. At least 3 error cases with specific messages?
-5. Realistic sample data (no "example", "test", or "string" placeholders)?
-6. Parameter names consistently snake_case?
+3. Title under 10 words, sentence case, no period?
+4. Description exactly 2-3 sentences?
+5. affected_areas using only standardized names?
+6. details is null when user_action_required is false?
 
 **Step 10 — Reflect.** You've built three versions: loose (Step 1), schema-only (Step 2), and schema + constraints (Step 5). The progression shows three distinct levels of production readiness:
-- **Loose**: Human-readable but unparseable and inconsistent
-- **Schema-only**: Parseable and structured but with uncontrolled quality variation
-- **Schema + constraints**: Parseable, structured, AND consistently high quality
+- **Loose**: Human-readable but not machine-parseable — a script can't extract structured fields from prose
+- **Schema-only**: Parseable and structured, but with uncontrolled quality variation (inconsistent lengths, vague data, repeated fields)
+- **Schema + constraints**: Parseable, structured, AND consistently high quality with enforced rules
 
-Which version could you hand off to a developer to integrate into a pipeline? That's the bar for "production-ready."
-
+Which version could you hand off to a developer to feed into an automated release notes system? That's the bar for "production-ready."
 ---
 
 ## Lab 4: Multi-Expert & Reverse Prompting (12 minutes)
