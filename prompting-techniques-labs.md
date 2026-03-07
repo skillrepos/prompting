@@ -103,150 +103,168 @@ This is measuring **consistency** — a key quality metric.
 **Step 8 — Reflect.** Rate each version (Steps 1-6) on a 1-5 scale for: specificity, usefulness, and consistency. Note which building block made the biggest difference for this task.
 
 ---
-
 ## Lab 2: Few-Shot & Chain of Thought Comparison (12 minutes)
 
-**Goal**: Compare zero-shot, few-shot, and Chain of Thought (CoT) prompting on a support ticket priority task where the "correct" answer depends on company-specific rules that only examples can teach.
+**Goal**: Compare zero-shot, few-shot, and Chain of Thought (CoT) prompting on a classification task where the "correct" answer depends on company-specific rules that the AI can't infer on its own.
 
-**What you'll learn**: How few-shot examples encode domain-specific policies that zero-shot can't infer from category names alone, and how CoT makes classification decisions auditable and debuggable.
+**What you'll learn**: When accuracy problems are caused by missing domain knowledge (not sloppy reasoning), few-shot examples fix the gap while CoT only makes the wrong reasoning visible — a useful distinction for choosing the right technique.
+
+**Scenario**: You work at a growth-stage SaaS company that just raised Series B. The company has unusual but defensible priority rules driven by its current business strategy — and several of these rules *contradict* standard industry practice.
 
 ### Steps
 
-**Step 1 — Zero-shot priority classification.** Paste this prompt and record the AI's answer:
+**Step 1 — Predict, then test.** Read this ticket carefully:
+
+> "Hey, just wanted to let you know that Competitor X released a feature similar to your dashboard. I'm still happy with your product, but thought you'd want to know!"
+
+**Before pasting anything**, write down: what priority would you assign (P1-Critical, P2-High, P3-Medium, P4-Low)? And what priority do you think the AI will assign?
+
+Now test your prediction:
 
 ```
 You are a support ticket classifier. Assign exactly one priority level to the following support ticket: P1-Critical, P2-High, P3-Medium, or P4-Low.
 
-Ticket: "Hi, just a heads-up — I noticed some of my files from last Tuesday seem to be missing from the shared drive. Not urgent, but could someone take a look when they get a chance? Thanks!"
+Ticket: "Hey, just wanted to let you know that Competitor X released a feature similar to your dashboard. I'm still happy with your product, but thought you'd want to know!"
 ```
 
-Record the priority assigned. The ticket is politely worded and the customer explicitly says "not urgent" — the AI will likely follow the customer's lead. But should it? (Hint: the ticket describes *data loss*.)
+Were you right about the AI's answer? This seems low-priority — the customer is happy and just sharing info. But at this company, **any mention of a competitor is an immediate P1 churn signal**, because reducing churn is the board's #1 metric post-Series B.
 
-**Step 2 — Test with more tickets.** Classify these one at a time using the same zero-shot prompt (just change the ticket). Record each result:
-
-```
-Ticket: "THIS IS UNACCEPTABLE. I updated my profile photo and it's been 3 hours and the old one still shows on some pages. Fix this NOW or I'm switching to a competitor. WORST. SERVICE. EVER."
-```
-```
-Ticket: "We're evaluating your platform for a potential 500-seat enterprise deployment. Could you help us understand your SSO integration options?"
-```
-```
-Ticket: "The export button on the reports page gives a 404 error. I can work around it by using the API, but figured you'd want to know."
-```
-```
-Ticket: "Our team of 12 can't access the platform at all since this morning. We have client deliverables due today."
-```
-
-Before looking at results, write down what YOU would assign to each. Then compare.
-
-**Step 3 — Examine the zero-shot results.** Zero-shot classifies based on tone, urgency language, and apparent severity. But companies often have specific priority policies that override surface signals. Consider:
-- The polite "missing files" ticket (Step 1): Zero-shot probably assigned P3 or P4 because the customer said "not urgent." But data loss is *always* critical in most support policies, regardless of how the customer phrases it.
-- The angry profile photo ticket: Zero-shot probably assigned P2 or P3 because of the furious tone. But a profile photo cache delay is a P4-Low cosmetic issue — the anger is wildly disproportionate to the actual problem.
-- The "evaluating for 500-seat deployment" ticket: Zero-shot might assign P3 or P4 since it's just a question. But a potential enterprise deal is a high-priority revenue opportunity.
-
-Note which tickets the AI classified based on *tone* rather than *business impact*.
-
-**Step 4 — Now try few-shot prompting.** Provide examples that encode specific priority rules:
+**Step 2 — Batch classify.** Now test all 5 tickets at once to build a zero-shot baseline:
 
 ```
-You are a support ticket classifier. Assign exactly one priority level: P1-Critical, P2-High, P3-Medium, or P4-Low.
+You are a support ticket classifier. Assign exactly one priority level to each ticket: P1-Critical, P2-High, P3-Medium, or P4-Low.
 
-Company priority rules (taught by example):
+Classify each ticket independently. Present results as a table with columns: Ticket #, Short Description, Priority, Reasoning (1 sentence).
 
-Ticket: "I accidentally deleted some records from the database and can't find them in the trash."
-Priority: P1-Critical
-(Data loss or potential data loss is always P1, regardless of customer tone.)
+Ticket 1: "Hey, just wanted to let you know that Competitor X released a feature similar to your dashboard. I'm still happy with your product, but thought you'd want to know!"
 
-Ticket: "YOUR APP IS THE WORST THING I'VE EVER USED. The font size on the settings page is too small to read."
-Priority: P4-Low
-(Cosmetic/UI preference issues are P4 regardless of how angry the customer is.)
+Ticket 2: "URGENT: I accidentally deleted my project files and I need them back IMMEDIATELY. This is a disaster!"
 
-Ticket: "We're a 200-person company looking at your enterprise plan. Can someone walk us through pricing?"
-Priority: P2-High
-(Pre-sales inquiries from potential enterprise customers are P2 — revenue opportunity.)
+Ticket 3: "The 'Get Started' button on your pricing page has a weird color glitch on mobile. Just FYI."
 
-Ticket: "None of our team members can log in. Affecting 30+ users since 9 AM."
-Priority: P1-Critical
-(Service outages affecting multiple users are always P1.)
+Ticket 4: "None of our 25-person team can access the platform since 8 AM. We have client meetings today."
 
-Ticket: "The CSV export includes an extra blank column at the end. Minor annoyance but thought you should know."
-Priority: P3-Medium
-(Functional bugs with easy workarounds are P3.)
-
-Ticket: "I've been on hold for 45 minutes and I'm FURIOUS. I just need to update my billing address."
-Priority: P4-Low
-(Routine account changes are P4 regardless of customer frustration with wait times.)
-
-Now classify this ticket:
-Ticket: "Hi, just a heads-up — I noticed some of my files from last Tuesday seem to be missing from the shared drive. Not urgent, but could someone take a look when they get a chance? Thanks!"
+Ticket 5: "I was charged $45 twice this month. Can someone look into this?"
 ```
 
-Notice the key policy encoded in these examples: **priority is based on business impact, not customer tone.** Angry customers with minor issues get P4. Polite customers reporting data loss get P1.
+Look at the results. The AI will classify based on **general industry norms**. But this company's actual rules are very different.
 
-**Step 5 — Classify all test tickets with few-shot.** Run each of the 4 test tickets from Step 2 through your few-shot prompt. Record results side by side with zero-shot.
+**Step 3 — Spot the mismatches.** Here is this company's actual priority policy — shaped by their growth strategy:
 
-**Step 6 — Compare zero-shot vs. few-shot.** Look at where the results differ:
-- Did the "missing files" ticket get upgraded from P3/P4 to P1? (The examples teach that data loss = P1 regardless of tone.)
-- Did the angry profile photo ticket get downgraded to P4? (The examples teach that cosmetic issues are P4 regardless of how furious the customer is.)
-- Did the "500-seat evaluation" ticket get upgraded to P2? (The examples teach that enterprise pre-sales = high priority.)
-- How many tickets changed classification? This is the power of few-shot: it teaches business rules the model can't infer from category names alone.
+- **Any mention of a competitor** = always P1, even if the customer sounds happy (churn prevention is the #1 board metric)
+- **Data loss for single users** = P3, not P1 (automated backups recover files in 15 minutes — this is routine)
+- **UI/cosmetic bugs on public-facing pages** (pricing, signup, landing) = P2 (these pages drive conversion — the growth team's top priority)
+- **Service outages affecting teams** = P1 (standard)
+- **Billing issues under $100** = P4 (self-service billing portal handles these automatically)
 
-**Step 7 — Add Chain of Thought.** Now add structured reasoning before classification:
+Compare the AI's zero-shot answers to this policy. How many of the 5 tickets did zero-shot get wrong?
+
+**Step 4 — Try CoT without the company rules.** Start a new conversation. This time, give the AI a structured reasoning framework — but do NOT include the company-specific policy. We want to see if better *thinking* alone fixes the errors:
 
 ```
-You are a support ticket classifier. Assign exactly one priority level: P1-Critical, P2-High, P3-Medium, or P4-Low.
+You are a support ticket classifier. Assign exactly one priority level to each ticket: P1-Critical, P2-High, P3-Medium, or P4-Low.
 
-Before classifying, reason through these steps:
-1. What is the actual technical/business issue? (Ignore emotional language — focus on what's broken or needed.)
+For each ticket, reason through these steps BEFORE assigning priority:
+1. What is the actual technical or business issue? (Ignore emotional language.)
 2. What is the blast radius? (One user, a team, all users, or a potential customer?)
 3. Is there data loss, a security risk, or a revenue impact?
 4. Does the customer have a workaround?
 5. Based on business impact (not tone), assign priority.
 
-Examples:
+Show your full reasoning for each ticket, then present a summary table.
 
-Ticket: "I accidentally deleted some records from the database and can't find them in the trash."
-Reasoning:
-1. Issue: Data has been deleted and cannot be recovered through normal means.
-2. Blast radius: At minimum one user's data; could affect shared records.
-3. Data loss: Yes — confirmed missing records with no recovery path.
-4. Workaround: None apparent — data is gone.
-5. Data loss with no workaround is always critical.
-Priority: P1-Critical
+Ticket 1: "Hey, just wanted to let you know that Competitor X released a feature similar to your dashboard. I'm still happy with your product, but thought you'd want to know!"
 
-Ticket: "YOUR APP IS THE WORST THING I'VE EVER USED. The font size on the settings page is too small to read."
-Reasoning:
-1. Issue: Font size on one page is too small. This is a UI/cosmetic preference.
-2. Blast radius: One user's visual preference; settings page is rarely visited.
-3. Data loss/security/revenue: None.
-4. Workaround: Browser zoom, accessibility settings.
-5. Cosmetic issue with available workarounds, despite angry tone.
-Priority: P4-Low
+Ticket 2: "URGENT: I accidentally deleted my project files and I need them back IMMEDIATELY. This is a disaster!"
 
-Now classify:
-Ticket: "Hi, just a heads-up — I noticed some of my files from last Tuesday seem to be missing from the shared drive. Not urgent, but could someone take a look when they get a chance? Thanks!"
+Ticket 3: "The 'Get Started' button on your pricing page has a weird color glitch on mobile. Just FYI."
+
+Ticket 4: "None of our 25-person team can access the platform since 8 AM. We have client meetings today."
+
+Ticket 5: "I was charged $45 twice this month. Can someone look into this?"
 ```
 
-**Step 8 — Test CoT on all tickets.** Run each test ticket through the CoT prompt. Record the results.
+Compare to zero-shot. You'll likely find CoT produces **the same classifications** — and that's the key insight. The reasoning is now *visible* (you can read exactly how the AI thought through each ticket), but the answers don't improve. Why? Because the errors aren't caused by sloppy thinking — they're caused by **missing domain knowledge**. The AI reasons perfectly well about blast radius and business impact, but it has no way to know that this company treats competitor mentions as P1 or that single-user data loss is only P3 because of automated backups. CoT makes the reasoning auditable, which is great for debugging — but structured thinking can't substitute for information the model doesn't have.
 
-**Step 9 — Build a comparison table.** Create a simple table:
+**Step 5 — Teach the policy with examples.** Now paste this few-shot prompt — it teaches the company's policy through examples, not rules:
 
-| Ticket (short) | Zero-Shot | Few-Shot | CoT | Correct |
-|----------------|-----------|----------|-----|---------|
-| Missing files (polite) | | | | P1 |
-| Profile photo (angry) | | | | P4 |
-| 500-seat evaluation | | | | P2 |
-| Export 404 (workaround) | | | | P3 |
-| Team of 12 locked out | | | | P1 |
+```
+You are a support ticket classifier for a growth-stage SaaS company. Assign exactly one priority level: P1-Critical, P2-High, P3-Medium, or P4-Low.
 
-Fill in all results. The "Correct" column reflects the company's policy: priority by business impact, not customer tone. How did each technique score?
+Company priority rules (taught by example):
 
-**Step 10 — Evaluate and reflect.** Consider what you observed:
-- **Zero-shot** likely followed customer tone: angry customers got high priority, polite customers got low priority. How many did it get "wrong" by the company's actual policy?
-- **Few-shot** encoded the "impact over tone" rule through examples. Did it correctly override tone-based classification? Which tickets flipped to the right answer?
-- **CoT** made the reasoning visible. For the polite "missing files" ticket, did the reasoning chain correctly identify data loss as the key factor despite the casual tone? Could you hand this reasoning to a manager to explain why a "not urgent" ticket was classified P1?
+Ticket: "I noticed your competitor just launched a mobile app. I don't need one personally, but just a heads up."
+Priority: P1-Critical
+(Any mention of a competitor — even casual or positive — is P1. Churn prevention is our top metric.)
 
-Key takeaway: few-shot is most powerful when the correct classification depends on **domain-specific rules** that contradict the model's general intuition. CoT adds value when you need to **audit and explain** why a non-obvious classification was made.
+Ticket: "Help! I accidentally deleted my entire project folder. I need those files back!"
+Priority: P3-Medium
+(Single-user data loss is P3. Our automated backup system recovers files in 15 minutes.)
+
+Ticket: "The testimonial carousel on the homepage is overlapping the signup button on tablets."
+Priority: P2-High
+(UI bugs on public-facing pages like homepage, pricing, or signup are P2 — they affect conversion rates.)
+
+Ticket: "Our whole department of 40 people can't log in since this morning."
+Priority: P1-Critical
+(Service outages affecting teams are always P1.)
+
+Ticket: "You double-charged me $29 on my last invoice. Please refund."
+Priority: P4-Low
+(Billing issues under $100 are P4 — our self-service billing portal handles these automatically.)
+
+Ticket: "I just finished a demo of Competitor Y for my team. Still deciding between you two."
+Priority: P1-Critical
+(Active competitor evaluation = highest churn risk. Always P1 regardless of tone.)
+
+Now classify these 5 tickets. Present as a table with: Ticket #, Short Description, Priority, Reasoning.
+
+Ticket 1: "Hey, just wanted to let you know that Competitor X released a feature similar to your dashboard. I'm still happy with your product, but thought you'd want to know!"
+
+Ticket 2: "URGENT: I accidentally deleted my project files and I need them back IMMEDIATELY. This is a disaster!"
+
+Ticket 3: "The 'Get Started' button on your pricing page has a weird color glitch on mobile. Just FYI."
+
+Ticket 4: "None of our 25-person team can access the platform since 8 AM. We have client meetings today."
+
+Ticket 5: "I was charged $45 twice this month. Can someone look into this?"
+```
+
+Compare all three tables. Few-shot should nail all 5 — the examples directly taught the counterintuitive rules that neither zero-shot nor CoT could figure out. This is the payoff: examples don't just improve reasoning, they **transfer knowledge** the model couldn't access otherwise.
+
+**Step 6 — Identify the pattern.** Look at your zero-shot, CoT, and few-shot results together. Notice that zero-shot and CoT likely produced the same classifications — the only difference is CoT shows its work. For each ticket, write down: what reasoning did CoT reveal, and why didn't that reasoning lead to the correct answer? What did the few-shot examples provide that structured thinking alone couldn't?
+
+**Step 7 — Compare results.** Fill in your scorecard:
+
+| Ticket (short) | Zero-Shot | CoT (no rules) | Few-Shot | Company Policy |
+|----------------|-----------|----------------|----------|----------------|
+| Competitor mention (happy) | | | | P1 |
+| Deleted files (urgent) | | | | P3 |
+| Pricing page glitch (casual) | | | | P2 |
+| 25-person outage | | | | P1 |
+| $45 double charge | | | | P4 |
+
+You should see: zero-shot (~2/5), CoT (~2/5 — same answers, but with visible reasoning), few-shot (5/5). The takeaway: CoT adds **auditability** (you can see *why* the AI chose each priority), but it doesn't add **accuracy** when the problem is missing domain knowledge. Only few-shot — which transfers the company's actual rules through examples — closes the gap.
+
+**Step 8 (Optional) — Write your own tricky ticket.** Write a support ticket designed to **fool the zero-shot classifier** given this company's unusual rules. Hint: try a ticket where the obvious priority and the company policy priority are as far apart as possible.
+
+**Step 9 (Optional) — Test your adversarial ticket.** Paste your tricky ticket and ask:
+
+```
+Classify this ticket using all three approaches (zero-shot, few-shot with the company examples, and CoT with the company-specific reasoning framework). Show each approach's classification side by side.
+```
+
+Which technique handled your adversarial ticket best?
+
+**Step 10 — Reflect.** Complete your final comparison:
+
+| Technique | Tickets Correct (out of 5) | Best For |
+|-----------|---------------------------|----------|
+| Zero-shot | ___ | |
+| Few-shot | ___ | |
+| CoT | ___ | |
+
+Key takeaway: CoT improves *how* the AI reasons but can't teach it rules it doesn't know. Few-shot teaches domain knowledge directly through examples. In production, combine both: few-shot examples to teach the rules, plus CoT to make every decision auditable. The AI "knows" standard industry practices — but it can't know *your* company's unique priorities unless you teach it.
 
 ---
 
