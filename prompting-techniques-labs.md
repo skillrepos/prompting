@@ -408,15 +408,19 @@ Notice the refinement: "For trivial fixes, 1 sentence is acceptable" — that's 
 
 ### Steps
 
-**Step 1 — Single-perspective baseline.** Paste this prompt:
+**Step 1 — Generic baseline.** Paste this prompt:
 
 ```
 Should our company adopt a 4-day work week? Give your recommendation.
 ```
 
-Note the response: Does it consider multiple angles or lean toward one perspective?
+Read the response. It's probably balanced and well-written. Now ask yourself: **could you actually make a decision based on this?** Look for specifics — does it give you a financial estimate of the cost? A concrete legal risk? A specific metric you could track? Note what *actionable details* (numbers, named risks, specific recommendations) it includes.
 
-**Step 2 — Multi-expert panel.** Now simulate a panel of experts:
+**Step 2 — Design your own expert panel.** Before looking ahead, think about this question: *Which 3-4 expert roles would give you the most useful range of perspectives on the 4-day work week decision?*
+
+Write down your panel (just the role names and what each should focus on).
+
+**Step 3 — Run the panel.** Paste a multi-expert prompt using either your own panel design or this reference:
 
 ```
 Task: Analyze whether a 200-person software company should adopt a 4-day work week.
@@ -446,17 +450,20 @@ After all 4 experts present, provide:
 - The single most important factor the decision hinges on
 ```
 
-**Step 3 — Compare depth.** Compare the Step 1 and Step 2 responses:
-- How many distinct perspectives were covered in each?
-- Did the multi-expert version surface risks you hadn't considered?
-- Was the synthesis recommendation more nuanced?
+Now note the actionable details again — financial estimates, named legal risks, specific metrics, concrete recommendations. How many more did the panel surface compared to Step 1? The difference isn't just more perspectives — it's that each expert is forced to provide *specifics* rather than hedged generalities.
 
-**Step 4 — Customize the panel.** Choose a decision relevant to your own work (e.g., adopting a new tool, changing a process, launching a feature). Modify the expert panel to include 3-4 roles relevant to that decision. Run it.
-
-**Step 5 — Transition to reverse prompting.** Now let's flip the script. Instead of you writing the prompt, let the AI ask the questions. Paste:
+**Step 4 (Optional) — Apply the panel to your own decision.** Think of a real decision you're facing at work (adopting a tool, changing a process, launching something new). In the same conversation, ask:
 
 ```
-I want to write a prompt that generates a comprehensive project proposal for a software project. But instead of me writing that prompt, I want you to help me discover what the prompt needs.
+Now apply the same multi-expert panel format to this decision: [describe your decision in 1-2 sentences]. Adapt the expert roles to be relevant to this specific domain.
+```
+
+Did the AI choose useful expert roles? Did any perspective surprise you?
+
+**Step 5 — Flip the script with reverse prompting.** Now let the AI ask the questions. Paste:
+
+```
+I want to write a prompt that generates a comprehensive project proposal for a software project. But instead of me writing that prompt, I want you to help me discover what it needs.
 
 Ask me a series of clarifying questions — one at a time — to understand:
 - What kind of project this is for
@@ -465,27 +472,24 @@ Ask me a series of clarifying questions — one at a time — to understand:
 - What constraints exist
 - What level of detail is needed
 
-Ask your first question now. After I answer each question, ask the next one. After 5-6 questions, generate the complete prompt for me.
+Ask your first question now. After I answer, ask the next one. After 4-5 questions, generate the complete prompt for me.
 ```
 
-**Step 6 — Answer the AI's questions.** Respond to each question the AI asks. Be as specific or vague as you'd naturally be — this tests whether the AI asks good follow-ups. Go through 5-6 rounds of questions.
+**Step 6 — Answer honestly.** Respond to each question the AI asks. Be as specific or vague as you'd naturally be — this tests whether the AI asks good follow-ups. Go through all the questions.
 
-**Step 7 — Evaluate the generated prompt.** After the AI generates your prompt, assess it:
-- Did it capture details you wouldn't have included on your own?
+**Step 7 — Evaluate the generated prompt.** After the AI generates your prompt, score it:
+- Did it include details you wouldn't have thought of on your own? (List 2-3 examples.)
+- Does it incorporate all 6 building blocks from Lab 1?
 - Is it more specific than what you would have written from scratch?
-- Does it include elements from the 6 building blocks?
 
-**Step 8 — Test the generated prompt.** Take the prompt the AI created and use it in a new conversation. Does the output match what you envisioned?
+**Step 8 — Test the generated prompt.** Copy the prompt the AI built for you and run it. Does the output match what you described during the Q&A? Note any gaps — these reveal requirements the reverse prompting process missed.
 
-**Step 9 — Compare approaches.** Think about what each technique revealed:
-- Multi-expert: How many distinct risks and perspectives did it surface vs. Step 1's single-perspective answer? Count them.
-- Reverse prompting: Did the AI ask you about things you hadn't considered? List 2-3 details the generated prompt included that you wouldn't have thought of on your own.
+**Step 9 — Think about combining.** Consider: if you fed this generated prompt into a multi-expert panel (like Lab 4), what 3 expert roles would add the most value? How would combining reverse prompting (to discover requirements) with multi-expert analysis (to stress-test) produce better results than either alone?
 
 **Step 10 — Reflect on when to use each.** These techniques solve different problems:
-- **Multi-expert** is best when you already know the question but need to stress-test it from multiple angles. Use it for decisions with competing stakeholder interests.
-- **Reverse prompting** is best when you don't know what you don't know — when the problem space is unfamiliar or you suspect you're missing requirements.
-- **Combined**: In practice, you'd use reverse prompting first (to discover requirements), then feed those into a multi-expert analysis (to stress-test the decision). Write down one real decision at work where this two-step approach would be valuable.
-
+- **Multi-expert** is best when you know the question but need to stress-test it from multiple angles.
+- **Reverse prompting** is best when you don't know what you don't know — when the problem space is unfamiliar.
+- **Combined**: Use reverse prompting first (discover requirements), then feed those into a multi-expert analysis (stress-test the decision). Write down one real situation where this two-step approach would be valuable.
 ---
 
 ## Lab 5: Optimization & Integration (10 minutes)
