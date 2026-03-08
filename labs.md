@@ -673,14 +673,22 @@ When prompted, enter: **Paris, France**
 
 Watch the output carefully. You'll see a loop: the agent **Thinks** (reasons about what to do), takes an **Action** (calls a weather tool), receives an **Observation** (the tool's result), then produces a **Final Answer**. This is the TAO pattern: Thought → Action → Observation. Note the exact format of the tool call — the agent outputs `Action:` and `Args:` on specific lines.
 
+![initial run](./images/prompt-accel5.png?raw=true "initial run")
+
 <br><br>
 
-**Step 2 — Read the system prompt.** Open `agent.py` in the Codespace editor. Find the `SYSTEM` prompt — it's a large text string near the top of the file. Read through it and identify these sections:
+**Step 2 — Read the system prompt.** Open `agent.py` in the Codespace editor. Find the `SYSTEM` prompt — it's a large text string starting at section "5" around line 66.  Read through it and identify these sections:
 - **Tool definition**: Where does it describe the `get_weather` tool and its parameters?
 - **Format rules**: Where does it specify the Thought/Action/Args/Observation format?
 - **Critical rules**: Where does it tell the agent when to STOP and wait?
 
 Don't modify anything yet — just map the sections.
+
+```
+code agent.py
+```
+
+![system prompt](./images/prompt-accel6.png?raw=true "system prompt")
 
 <br><br>
 
@@ -699,44 +707,50 @@ Write your prediction down. You'll test it in Step 8.
 
 <br><br>
 
-**Step 5 — Test a location edge case.** Run the agent again and enter: **Sydney, Australia**
+**Step 5 — Test a fictional city.** Run the agent again and enter: **Atlantis**
 
-The agent should call the weather tool and return results. But check the coordinates it used — did it use **negative** latitude for Sydney (which is in the Southern Hemisphere)? The SYSTEM prompt says nothing about hemisphere handling. If the agent used positive latitude, the weather data might be for the wrong location entirely. This is a prompt gap — a missing rule that causes silent failure.
+The agent has no geocoding tool — it converts city names to latitude/longitude coordinates by itself. Watch what happens: it will **make up coordinates** for Atlantis, call `get_weather` with those fake coordinates, and confidently report real weather data for some random spot on Earth. It didn't refuse, didn't say "I'm not sure Atlantis exists" — it hallucinated coordinates and presented the result as fact.
 
-<br><br>
 
-**Step 6 — Fix the prompt.** Edit the SYSTEM prompt in `agent.py` to add a rule about coordinate handling. Add a line in the CRITICAL RULES section, something like:
+![Ficticious city](./images/prompt-accel9.png?raw=true "Ficticious city")
 
-> "For locations in the Southern Hemisphere, use negative latitude. For locations in the Western Hemisphere, use negative longitude."
-
-Save the file, run the agent again with "Sydney, Australia," and verify it now uses negative latitude. You just changed agent behavior by editing text — no code changes.
+This is a prompt gap. The SYSTEM prompt has no rule telling the agent to verify a city is real before looking up its weather.
 
 <br><br>
 
-**Step 7 — Add a new behavior.** Add another rule to the SYSTEM prompt:
+**Step 6 — Fix the prompt.** Edit the SYSTEM prompt in `agent.py` to add a validation rule. Add this as a new rule in the CRITICAL RULES section:
+
+> "If the user asks for a city you are not confident is a real, existing city, respond with Final: saying you cannot find that city. Do NOT guess coordinates."
+
+![Fixing prompt](./images/prompt-accel10.png?raw=true "Fixing prompt")
+
+<br><br>
+
+**Step 7 - Retry.** Save the file, run the agent again with "Atlantis," and verify it now refuses instead of hallucinating coordinates. You just changed agent behavior by editing text — no code changes.
+
+
+![Fixed prompt](./images/prompt-accel11.png?raw=true "Fixed prompt")
+
+<br><br>
+
+**Step 8 — Add a new behavior.** Add another rule to the SYSTEM prompt:
 
 > "Always include a brief travel tip for the location in your final answer."
 
 Run the agent with any city. Does the final answer now include a travel tip? If it does, the prompt change worked. If not, try making the instruction more specific (e.g., "After the weather summary, add one sentence starting with 'Travel tip:'").
 
-<br><br>
-
-**Step 8 — Break the prompt on purpose.** Now remove the entire "CRITICAL RULES" section from the SYSTEM prompt. Save and run the agent with "Paris, France" again. What breaks?
+**Step 9 — Break the prompt on purpose.** Now remove the entire "CRITICAL RULES" section from the SYSTEM prompt. Save and run the agent with "Paris, France" again. What breaks?
 - Does it still follow the Thought/Action/Observation format?
 - Does it call the tool, or does it hallucinate weather data?
 - Does it wait for the tool result, or does it make up an observation?
 
 Compare to your prediction from Step 4.
 
-<br><br>
-
-**Step 9 — Restore and reflect.** Undo your changes (Ctrl+Z or re-paste the original SYSTEM prompt). Run the agent one more time to confirm it works correctly again.
+**Step 10 — Restore and reflect.** Undo your changes (Ctrl+Z or re-paste the original SYSTEM prompt). Run the agent one more time to confirm it works correctly again.
 
 The key lesson: you changed the agent's behavior — added capabilities, fixed bugs, and broke functionality — by editing **only the SYSTEM prompt text**. You never modified a line of Python. The prompt is the control layer for AI agents.
 
-<br><br>
-
-**Step 10 — Extract the pattern.** Agent prompts need four elements that chat prompts don't:
+**Step 11 — Extract the pattern.** Agent prompts need four elements that chat prompts don't:
 - **Tool definitions** — what tools exist and what they do
 - **Format rules** — how the agent communicates (Thought/Action/Observation)
 - **Execution rules** — when to act vs. wait, how to sequence steps

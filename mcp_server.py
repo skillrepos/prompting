@@ -86,7 +86,7 @@ def expand_tool(text: str) -> str:
 @server.resource("resource://model")
 def model_name():
     print(f"{BLUE}[RESOURCE REQUEST] model_name requested{RESET}")
-    result = {"model": "llama3.2:latest"}
+    result = {"model": "granite4:3b"}
     print(f"{GREEN}[RESOURCE RETURN] model_name response: {result}{RESET}")
     return result
 

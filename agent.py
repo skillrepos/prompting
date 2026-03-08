@@ -61,7 +61,7 @@ TOOLS = {
 }
 
 # ── 4. LLM client ───────────────────────────────────────────────────────────
-llm = ChatOllama(model="llama3.2", temperature=0.0)
+llm = ChatOllama(model="granite4:3b", temperature=0.0)
 
 # ── 5. System prompt ────────────────────────────────────────────────────────
 SYSTEM = textwrap.dedent("""

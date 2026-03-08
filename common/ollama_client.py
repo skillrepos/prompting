@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 import requests
 
 
-DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "granite4:3b")
 DEFAULT_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
 
 

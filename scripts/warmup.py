@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-warmup.py – Pre-loads the llama3.2:3b model into Ollama so that subsequent
+warmup.py – Pre-loads the granite4:3b model into Ollama so that subsequent
 lab operations (simple_prompt_runner, cot_runner, rag_prompt_runner,
 react_weather_agent, agent.py, mcp_client_agent.py) feel fast.
 Run from the repo root:
@@ -26,7 +26,7 @@ ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT))
 import requests
 # ── Config (mirrors common/ollama_client.py defaults) ───────────────────────
-MODEL   = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
+MODEL   = os.getenv("OLLAMA_MODEL", "granite4:3b")
 HOST    = os.getenv("OLLAMA_HOST",  "http://127.0.0.1:11434")
 TIMEOUT = int(os.getenv("OLLAMA_WARMUP_TIMEOUT", "300"))   # seconds
 WARMUP_PROMPT  = "Reply with the single word: ready"

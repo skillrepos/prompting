@@ -104,7 +104,7 @@ async def main():
 
         first = model_res[0] if isinstance(model_res, (list, tuple)) and model_res else model_res
         model_json = json.loads(_as_text(first))
-        model_name = model_json.get("model", "llama3.2:latest")
+        model_name = model_json.get("model", "granite4:3b")
 
         print(f"{BLUE}Model name used for Ollama: {model_name!r}{RESET}")
 
