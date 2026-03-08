@@ -1,10 +1,24 @@
 # Prompt Engineering Accelerator — Hands-On Labs
+## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
+
+## Session labs 
+## Revision 4.5 - 03/08/26
 
 ## How to Use These Labs
 
-Each lab is designed to take 10-12 minutes using any free AI chat interface (ChatGPT, Claude, Gemini, Copilot, or a local model via Ollama). You'll paste prompts, observe results, iterate, and compare. No coding required.
+Labs 1-4 can be done using any free AI chat interface (ChatGPT, Claude, Gemini, Copilot, or a local model via Ollama). You'll paste prompts, observe results, iterate, and compare. No coding required. **Setup**: Open your preferred AI chat interface in a browser tab. Start a new conversation for each lab.
 
-**Setup**: Open your preferred AI chat interface in a browser tab. Start a new conversation for each lab.
+Labs 5-6 are designed to be done in the codespace environment. **Setup:** Follow the startup instructions in the README.md file IF NOT ALREADY DONE!
+
+
+
+**NOTES**
+- To copy and paste in the codespace, you may need to use keyboard commands - CTRL-C and CTRL-V. Chrome may work best for this.
+- If your codespace has to be restarted, run these commands again!
+  ```
+  ollama serve &
+  python warmup_models.py
+  ```
 
 ---
 
