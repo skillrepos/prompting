@@ -1,39 +1,38 @@
-# AI Security + Prompting Lab Pack (Codespaces + Ollama)
-This package contains the **actual code assets** referenced by the two lab markdown files:
+# Prompt Engineering Accelerator for AI
 
-- `ai-security-labs.md`
-- `prompting-techniques-labs.md`
+## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting ##
 
-## Prereqs
-- GitHub Codespace (recommended)
-- Ollama running locally in the Codespace (or forwarded) with:
-  - `llama3.2:3b`
+These instructions will guide you through configuring a GitHub Codespaces environment that you can use to do the labs. 
 
-## Quick start
-From the repo root of this pack:
+**1. Change your codespace's default timeout from 30 minutes to longer (60 for half-day sessions, 90 for deep dive sessions).**
+To do this, when logged in to GitHub, go to https://github.com/settings/codespaces and scroll down on that page until you see the *Default idle timeout* section. Adjust the value as desired.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+![Changing codespace idle timeout value](./images/31ai5.png?raw=true "Changing codespace idle timeout value")
 
-Pull model (if needed):
+**2. Click on the button below to start a new codespace from this repository.**
 
-```bash
-ollama pull llama3.2:3b
-```
+Click here ➡️  [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/skillrepos/prompt-accel?quickstart=1)
 
-## Run a smoke test
-```bash
-python scripts/smoke_test.py
-```
+**3. Then click on the option to create a new codespace.**
 
-## Lab folders
-- `security/` — security labs code
-- `prompting/` — prompting labs code
+![Creating new codespace from button](./images/31ai1.png?raw=true "Creating new codespace from button")
 
-## Notes
-- The security labs include both **insecure** and **secure** implementations.
-- The `extra/` folder contains **diff targets** (the “secure” versions) so learners can use:
-  `code -d secure.txt insecure.py` then merge changes.
+This will run for a long time while it gets everything ready.
+
+After the initial startup, it will run a script to setup the python environment and install needed python pieces. This will take several more minutes to run. It will look like this while this is running.
+
+![Final prep](./images/31ai2.png?raw=true "Final prep")
+
+The codespace is ready to use when you see a prompt like the one shown below in its terminal.
+
+![Ready to use](./images/31ai3.png?raw=true "Ready to use")
+
+
+**4. Open up the *labs.md* file so you can follow along with the labs.**
+You can either open it in a separate browser instance or open it in the codespace. 
+
+![Opening labs](./images/31ai4.png?raw=true "Opening labs")
+
+**Now, you are ready for the labs!**
+
+
