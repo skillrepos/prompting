@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 5.0 - 03/09/26
+## Revision 5.1 - 03/09/26
 
 ## How to Use These Labs
 
@@ -716,7 +716,9 @@ This is a prompt gap. The SYSTEM prompt has no rule telling the agent to verify 
 
 **Step 5 — Fix the prompt.** Edit the SYSTEM prompt in `agent.py` to add a validation rule. Add this as a new rule in the CRITICAL RULES section:
 
-> "If the user asks for a city you are not confident is a real, existing city, respond with Final: saying you cannot find that city. Do NOT guess coordinates."
+```
+If the user asks for a city you are not confident is a real, existing city, respond with Final: saying you cannot find that city. Do NOT guess coordinates.
+```
 
 ![Fixing prompt](./images/prompt-accel10.png?raw=true "Fixing prompt")
 
@@ -731,7 +733,9 @@ This is a prompt gap. The SYSTEM prompt has no rule telling the agent to verify 
 
 **Step 7 — Add a new behavior.** Add another rule to the SYSTEM prompt:
 
-> "Always include a brief travel tip for the location in your final answer."
+```
+Always include a brief travel tip for the location in your final answer."
+```
 
 ![Fixed prompt](./images/prompt-accel12.png?raw=true "Fixed prompt")
 
