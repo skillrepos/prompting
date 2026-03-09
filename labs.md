@@ -514,7 +514,7 @@ Notice the refinement: "For trivial fixes, 1 sentence is acceptable" — that's 
 Should our company adopt a 4-day work week? Give your recommendation.
 ```
 
-Read the response. It's probably balanced and well-written. Now ask yourself: **could you actually make a decision based on this?** Look for specifics — does it give you a financial estimate of the cost? A concrete legal risk? A specific metric you could track? Write down how many *actionable details* (numbers, named risks, specific recommendations) it includes.
+Read the response. It's probably balanced and well-written. Now ask yourself: **could you actually make a decision based on this?** Look for specifics — does it give you a financial estimate of the cost? A concrete legal risk? A specific metric you could track? Note how many *actionable details* (numbers, named risks, specific recommendations) it includes.
 
 <br><br>
 
