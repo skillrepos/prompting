@@ -879,7 +879,16 @@ def action_items_tool(text: str) -> str:
 
 <br><br>
 
-**Step 9 - Run again.** Save the file. Restart both the server and client. Choose the function "action_items". Test by pasting a paragraph of meeting notes (or make some up, e.g., "We agreed to launch the beta by Friday. Sarah will update the docs and Mike needs to fix the login bug before Thursday."). Does it extract clean action items?
+**Step 9 - Run again.** Save the file. Restart both the server and client. Choose the function `action_items`. Test by pasting a paragraph of meeting notes (or make some up as in the sample below.
+
+```
+action_items
+```
+
+Sample:
+```
+We agreed to launch the beta by Friday. Sarah will update the docs and Mike needs to fix the login bug before Thursday."). Does it extract clean action items?
+```
 
 ![New function](./images/prompt-accel21.png?raw=true "New function")
 
