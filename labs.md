@@ -734,7 +734,7 @@ If the user asks for a city you are not confident is a real, existing city, resp
 **Step 7 — Add a new behavior.** Add another rule to the SYSTEM prompt:
 
 ```
-Always include a brief travel tip for the location in your final answer."
+Always include a brief travel tip for the location in your final answer.
 ```
 
 ![Fixed prompt](./images/prompt-accel12.png?raw=true "Fixed prompt")
