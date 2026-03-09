@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 4.9 - 03/09/26
+## Revision 5.0 - 03/09/26
 
 ## How to Use These Labs
 
@@ -703,7 +703,7 @@ This is the key insight: every behavior you saw came from a line in the prompt. 
 
 <br><br>
 
-**Step 4 — Test a fictional city.** Run the agent again and enter: **Atlantis**
+**Step 4 — Test a fictional city.** If not already running, start the agent again. Then enter: **Atlantis**
 
 The agent has no geocoding tool — it converts city names to latitude/longitude coordinates by itself. Watch what happens: it will **make up coordinates** for Atlantis, call `get_weather` with those fake coordinates, and confidently report real weather data for some random spot on Earth. It didn't refuse, didn't say "I'm not sure Atlantis exists" — it hallucinated coordinates and presented the result as fact.
 
