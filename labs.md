@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 4.8 - 03/09/26
+## Revision 4.9 - 03/09/26
 
 ## How to Use These Labs
 
@@ -703,13 +703,7 @@ This is the key insight: every behavior you saw came from a line in the prompt. 
 
 <br><br>
 
-**Step 4 — Predict a change.** Before editing anything, answer this: if you removed the line "After outputting Action/Args, STOP and wait for Observation" from the SYSTEM prompt, what would happen? Would the agent still call the tool? Would it wait for results? Would it make up weather data?
-
-Write your prediction down. You'll test it in Step 8.
-
-<br><br>
-
-**Step 5 — Test a fictional city.** Run the agent again and enter: **Atlantis**
+**Step 4 — Test a fictional city.** Run the agent again and enter: **Atlantis**
 
 The agent has no geocoding tool — it converts city names to latitude/longitude coordinates by itself. Watch what happens: it will **make up coordinates** for Atlantis, call `get_weather` with those fake coordinates, and confidently report real weather data for some random spot on Earth. It didn't refuse, didn't say "I'm not sure Atlantis exists" — it hallucinated coordinates and presented the result as fact.
 
@@ -720,7 +714,7 @@ This is a prompt gap. The SYSTEM prompt has no rule telling the agent to verify 
 
 <br><br>
 
-**Step 6 — Fix the prompt.** Edit the SYSTEM prompt in `agent.py` to add a validation rule. Add this as a new rule in the CRITICAL RULES section:
+**Step 5 — Fix the prompt.** Edit the SYSTEM prompt in `agent.py` to add a validation rule. Add this as a new rule in the CRITICAL RULES section:
 
 > "If the user asks for a city you are not confident is a real, existing city, respond with Final: saying you cannot find that city. Do NOT guess coordinates."
 
@@ -728,14 +722,14 @@ This is a prompt gap. The SYSTEM prompt has no rule telling the agent to verify 
 
 <br><br>
 
-**Step 7 - Retry.** Save the file, run the agent again with "Atlantis," and verify it now refuses instead of hallucinating coordinates. You just changed agent behavior by editing text — no code changes.
+**Step 6 - Retry.** Save the file, run the agent again with "Atlantis," and verify it now refuses instead of hallucinating coordinates. You just changed agent behavior by editing text — no code changes.
 
 
 ![Fixed prompt](./images/prompt-accel11.png?raw=true "Fixed prompt")
 
 <br><br>
 
-**Step 8 — Add a new behavior.** Add another rule to the SYSTEM prompt:
+**Step 7 — Add a new behavior.** Add another rule to the SYSTEM prompt:
 
 > "Always include a brief travel tip for the location in your final answer."
 
@@ -743,14 +737,14 @@ This is a prompt gap. The SYSTEM prompt has no rule telling the agent to verify 
 
 <br><br>
 
-**Step 9 - Run again.** Run the agent with any city. Does the final answer now include a travel tip? If it does, the prompt change worked. If not, try making the instruction more specific (e.g., "After the weather summary, add one sentence starting with 'Travel tip:'").
+**Step 8 - Run again.** Run the agent with any city. Does the final answer now include a travel tip? If it does, the prompt change worked. If not, try making the instruction more specific (e.g., "After the weather summary, add one sentence starting with 'Travel tip:'").
 
 ![Fixed prompt](./images/prompt-accel12.png?raw=true "Fixed prompt")
 
 
 The key lesson: you changed the agent's behavior — added capabilities and fixed bugs — by editing **only the SYSTEM prompt text**. You never modified a line of Python. The prompt is the control layer for AI agents.
 
-**Step 10 — Extract the pattern.** Agent prompts need four elements that chat prompts don't:
+**Step 9 — Extract the pattern.** Agent prompts need four elements that chat prompts don't:
 - **Tool definitions** — what tools exist and what they do
 - **Format rules** — how the agent communicates (Thought/Action/Observation)
 - **Execution rules** — when to act vs. wait, how to sequence steps
