@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 5.4 - 03/09/26
+## Revision 5.5 - 03/09/26
 
 ## How to Use These Labs
 
@@ -829,7 +829,9 @@ Notice the structure: the decorator names the prompt, the function returns the t
 
 **Step 5 — Modify a prompt.** Change the "summarize" prompt template to something more specific:
 
-> "You are a technical writer. Summarize the following text in exactly 2 bullet points, focusing on actionable takeaways: {text}"
+```
+You are a technical writer. Summarize the following text in exactly 2 bullet points, focusing on actionable takeaways: {text}
+```
 
 ![Updated prompt resource](./images/prompt-accel17.png?raw=true "Updated prompt resource")
 
