@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 4.7 - 03/09/26
+## Revision 4.8 - 03/09/26
 
 ## How to Use These Labs
 
@@ -653,7 +653,7 @@ Notice the two additions: the **incentive frame** at the top ("This will inform 
 
 <br>
 
-## Lab 5: Prompting for an AI Agent (12 minutes)
+## Lab 5: Prompting for an AI Agent 
 
 **Goal**: See how the system prompt controls a real AI agent's behavior, then modify it to change that behavior — without touching any code.
 
