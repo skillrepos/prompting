@@ -783,7 +783,6 @@ These are the same prompt engineering concepts from Labs 1-4 (role, constraints,
 python mcp_server.py
 ```
 
-Watch the startup output. The server registers its available prompts (summarize, reword, expand) and tools. Leave this terminal running.
 
 <br><br>
 
