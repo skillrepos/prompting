@@ -62,11 +62,16 @@ run_warmup_if_stale() {
     py_cmd="$REPO_ROOT/py_env/bin/python"
   fi
 
+  # Trap SIGINT/SIGTERM during warmup so devcontainer lifecycle signals
+  # or accidental Ctrl-C cannot kill the pull/warmup mid-download.
+  trap '' INT TERM HUP
   if ! (cd "$REPO_ROOT" && "$py_cmd" scripts/warmup.py); then
+    trap - INT TERM HUP
     echo "WARNING: Warmup did not complete successfully."
     echo "You can retry later with: bash scripts/post_attach_ollama.sh"
     return
   fi
+  trap - INT TERM HUP
 
   touch "$WARMUP_STAMP_FILE"
   echo "Warmup complete; updated $WARMUP_STAMP_FILE"
