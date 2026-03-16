@@ -745,7 +745,9 @@ Always include a brief travel tip for the location in your final answer.
 
 The key lesson: you changed the agent's behavior — added capabilities and fixed bugs — by editing **only the SYSTEM prompt text**. You never modified a line of Python. The prompt is the control layer for AI agents.
 
-**Step 9 — Extract the pattern.** Agent prompts need four elements that chat prompts don't:
+<br><br>
+
+**Step 9 — Notice the pattern.** Agent prompts need four elements that chat prompts don't:
 - **Tool definitions** — what tools exist and what they do
 - **Format rules** — how the agent communicates (Thought/Action/Observation)
 - **Execution rules** — when to act vs. wait, how to sequence steps
