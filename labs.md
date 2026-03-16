@@ -719,7 +719,7 @@ If the user asks for a city you are not confident is a real, existing city, resp
 
 <br><br>
 
-**Step 6 - Retry.** Save the file, run the agent again with "Atlantis," and verify it now refuses instead of hallucinating coordinates. You just changed agent behavior by editing text — no code changes.
+**Step 6 - Retry.** Save the file (Cmd/Ctrl+S), run the agent again with "Atlantis," and verify it now refuses instead of hallucinating coordinates. You just changed agent behavior by editing text — no code changes.
 
 
 ![Fixed prompt](./images/prompt-accel11.png?raw=true "Fixed prompt")
