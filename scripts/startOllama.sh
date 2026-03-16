@@ -58,6 +58,6 @@ if ! curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
   exit 1
 fi
 
-# ---- Stop server ----
-kill "$pid" >/dev/null 2>&1 || true
-wait "$pid" 2>/dev/null || true
+# Keep the server running so that warmup.py (next in postCreateCommand)
+# can reach it immediately.
+echo "Ollama server is running (pid $pid)."
