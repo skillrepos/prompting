@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 5.7 - 03/16/26
+## Revision 5.8 - 03/16/26
 
 ## How to Use These Labs
 
@@ -288,7 +288,7 @@ Compare all three tables. Few-shot should nail all 5 — the examples directly t
 
 <br><br>
 
-**Step 6 — Identify the pattern.** Look at your zero-shot, CoT, and few-shot results together. Notice that zero-shot and CoT likely produced the same classifications — the only difference is CoT shows its work. For each ticket, write down: what reasoning did CoT reveal, and why didn't that reasoning lead to the correct answer? What did the few-shot examples provide that structured thinking alone couldn't?
+**Step 6 — Identify the pattern.** Look at your zero-shot, CoT, and few-shot results together. Notice that zero-shot and CoT likely produced the same classifications — the only difference is CoT shows its work. For each ticket, consider: what reasoning did CoT reveal, and why didn't that reasoning lead to the correct answer? What did the few-shot examples provide that structured thinking alone couldn't?
 
 <br><br>
 
@@ -321,14 +321,6 @@ Classify this ticket using all three approaches (zero-shot, few-shot with the co
 Which technique handled your adversarial ticket best?
 
 <br><br>
-
-**Step 10 — Reflect.** Complete your final comparison:
-
-| Technique | Tickets Correct (out of 5) | Best For |
-|-----------|---------------------------|----------|
-| Zero-shot | ___ | |
-| Few-shot | ___ | |
-| CoT | ___ | |
 
 Key takeaway: CoT improves *how* the AI reasons but can't teach it rules it doesn't know. Few-shot teaches domain knowledge directly through examples. In production, combine both: few-shot examples to teach the rules, plus CoT to make every decision auditable. The AI "knows" standard industry practices — but it can't know *your* company's unique priorities unless you teach it.
 
