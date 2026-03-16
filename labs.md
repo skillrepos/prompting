@@ -419,7 +419,7 @@ These are the extremes: a complex breaking change with multiple impacts, and a t
 - Did it provide useful migration details (not just repeat the description)?
 - Did it handle the typo gracefully — or did it inflate a one-line fix into a multi-sentence description to meet the "2-3 sentences" rule?
 
-That last point is important: constraints that work for normal entries can create awkward results at the extremes. Note any rules that need adjusting.
+That last point is minor in this example, but could be more significant in others: constraints that work for normal entries can create awkward results at the extremes. Think about any rules that need adjusting.
 
 <br><br>
 
