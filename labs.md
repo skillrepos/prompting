@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 5.6 - 03/16/26
+## Revision 5.7 - 03/16/26
 
 ## How to Use These Labs
 
@@ -13,7 +13,7 @@ Labs 1-4 can be done using any free AI chat interface (ChatGPT, Claude, Gemini, 
 ```
 ollama run granite4:3b
 ```
-)
+**NOTE: Doing labs 1-4 in the codespace will likely be noticeably slower than running in another chat interface.**)
 
 Labs 5-6 are designed to be done in the codespace environment. **Setup:** Follow the startup instructions in the README.md file IF NOT ALREADY DONE!
 
