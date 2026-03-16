@@ -828,10 +828,19 @@ Notice the structure: the decorator names the prompt, the function returns the t
 **Step 5 — Modify a prompt.** Change the "summarize" prompt template to something more specific:
 
 ```
-You are a technical writer. Summarize the following text in exactly 2 bullet points, focusing on actionable takeaways: {text}
+"""You are a technical writer. Summarize the following text in exactly 2 bullet points, focusing on actionable takeaways."""
+    print(f"{BLUE}[PROMPT REQUEST] summarize called with text: {text!r}{RESET}")
+    result = {
+        "role": "user",
+        "content": (
+            "You are a technical writer. Summarize the following text in exactly 2 bullet points, focusing on actionable takeaways: {text}"
+            f"{text}"
+        )
+    }
 ```
 
-![Updated prompt resource](./images/prompt-accel17.png?raw=true "Updated prompt resource")
+![Updated prompt resource](./images/prompt-accel24.png?raw=true "Updated prompt resource")
+
 
 <br><br>
 
@@ -839,12 +848,12 @@ You are a technical writer. Summarize the following text in exactly 2 bullet poi
 
 Did the output change? You changed the agent's behavior by editing the **server** — the client code didn't change at all.
 
-![Revised output](./images/prompt-accel17.png?raw=true "Revised output")
+![Revised output](./images/prompt-accel25.png?raw=true "Revised output")
 
 
 <br><br>
 
-This is the MCP advantage: the prompt lives on the server, not in the agent. In Lab 5, the prompt was embedded in the agent's code. Here, it's a **resource** that can be updated independently. Imagine 10 different agents all using this server's "summarize" prompt — you update it in one place, and all 10 agents get the new behavior instantly.
+This shows the MCP advantage: the prompt lives on the server, not in the agent. In Lab 5, the prompt was embedded in the agent's code. Here, it's a **resource** that can be updated independently. Imagine 10 different agents all using this server's "summarize" prompt — you update it in one place, and all 10 agents get the new behavior instantly.
 
 <br><br>
 
@@ -863,7 +872,7 @@ def action_items_prompt(text: str) -> str:
 
 <br><br>
 
-**Step 8 - Add the tool stub.** Then add the matching tool stub so the client can invoke it (follow the pattern of the existing tool functions):
+**Step 8 - Add the tool stub.** Scroll down to around line 68. Then add the matching tool stub so the client can invoke it (follow the pattern of the existing tool functions):
 
 ```python
 @server.tool("action_items")
@@ -877,7 +886,7 @@ def action_items_tool(text: str) -> str:
 
 <br><br>
 
-**Step 9 - Run again.** Save the file. Restart both the server and client. Choose the function `action_items`. Test by pasting a paragraph of meeting notes (or make some up as in the sample below.
+**Step 9 - Run again.** Save the file. Restart both the server and client. Choose the function `action_items`. Test by pasting a paragraph of meeting notes as in the sample below or make some up.
 
 ```
 action_items
