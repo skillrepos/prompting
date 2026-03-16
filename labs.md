@@ -366,11 +366,11 @@ Look at what you got. It's probably readable — maybe bullet points, maybe a ni
 - Is "user action required" explicitly stated, or would a script have to guess from context?
 - If you ran this prompt 10 times, would the format be identical every time?
 
-The output is fine for a human reader — but it's not **machine-parseable**. That's the production gap. List every reason a script would struggle with this output.
+The output is fine for a human reader — but it's not **machine-parseable**. That's the production gap. Think about the reasons a script could struggle with this output.
 
 <br><br>
 
-**Step 3 — Design a machine-readable format.** Based on the parsing problems you identified, draft a structured format (JSON, XML, or whatever you prefer) that a script could reliably consume. Define specific field names, data types, and allowed values. Spend 2 minutes designing your schema before looking at Step 4.
+**Step 3 — Design a machine-readable format.** Based on the parsing problems already mentioned, think about a structured format (JSON, XML, or whatever you prefer) that a script could reliably consume. How would you define specific field names, data types, and allowed values? Spend 2 minutes designing your schema before looking at Step 4.
 
 <br><br>
 
