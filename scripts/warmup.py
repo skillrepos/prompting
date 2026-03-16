@@ -50,16 +50,37 @@ def _check_server() -> set[str]:
 
 
 def _pull_model_with_cli() -> bool:
-    """Pull model via CLI for visible progress and keepalive output."""
+    """Pull model via CLI for visible progress and keepalive output.
+
+    Runs ollama in its own process group and ignores INT/TERM/HUP in the
+    parent so that devcontainer lifecycle signals (rebuild, Ctrl-C, terminal
+    close) cannot interrupt the download.
+    """
+    import signal
+
     if not shutil.which("ollama"):
         return False
 
     print(f"  ↳ Running: ollama pull {MODEL}")
+
+    # Temporarily ignore signals that devcontainers send during lifecycle
+    # events (create, rebuild, attach).  SIGINT = Ctrl-C / interrupt,
+    # SIGTERM = graceful shutdown, SIGHUP = terminal hangup / rebuild.
+    sigs = [signal.SIGINT, signal.SIGTERM, signal.SIGHUP]
+    prev_handlers = {s: signal.signal(s, signal.SIG_IGN) for s in sigs}
     try:
-        # Keep stdout/stderr attached so progress is visible in post-attach logs.
-        subprocess.run(["ollama", "pull", MODEL], check=True)
+        # start_new_session=True gives the child its own process group so it
+        # does NOT receive signals from the controlling terminal.
+        subprocess.run(
+            ["ollama", "pull", MODEL],
+            check=True,
+            start_new_session=True,
+        )
     except subprocess.CalledProcessError as exc:
         sys.exit(f"\n✗ Failed to pull model '{MODEL}' via CLI. Exit code: {exc.returncode}\n")
+    finally:
+        for s, h in prev_handlers.items():
+            signal.signal(s, h)
     return True
 
 
