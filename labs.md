@@ -2,7 +2,7 @@
 ## Mastering the Techniques, Patterns, and Strategies Behind High-Performance AI Prompting
 
 ## Session labs 
-## Revision 5.9 - 03/16/26
+## Revision 6.0 - 03/16/26
 
 ## How to Use These Labs
 
@@ -911,13 +911,13 @@ MCP doesn't replace prompt engineering — it gives your prompts a standard way 
 
 <br><br>
 
-**Step 10 — Reflect.** You've now seen two levels of prompt engineering for AI systems:
+**Step 11 — Reflect.** You've now seen two levels of prompt engineering for AI systems:
 - **Lab 5**: System prompts that control a single agent's behavior. The prompt is embedded in the agent code. To change behavior, you edit the agent's file.
 - **Lab 6**: MCP prompt resources that live on a server. Multiple agents can discover and use them. To change behavior, you edit the server — agents pick up the change automatically.
 
 Both use the same prompt techniques you learned in Labs 1-4. The difference is **where the prompt lives and who controls it**. As AI systems grow from a single agent to many agents working together, MCP's separation of prompts from agents becomes essential.
 
-Consider which of these two approaches (embedded prompt vs. MCP resource) would work better for your team's AI workflows, and why?
+Consider which of these two approaches (embedded prompt vs. MCP resource) would work better for your team's AI workflows, and why.
 <br><br>
 
 <p align="center">— — —&nbsp;&nbsp;&nbsp;END OF LAB 6&nbsp;&nbsp;&nbsp;— — —</p>
