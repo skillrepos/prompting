@@ -27,6 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT))
 import requests
+from requests.exceptions import ConnectionError, Timeout
+
 # ── Config (mirrors common/ollama_client.py defaults) ───────────────────────
 MODEL   = os.getenv("OLLAMA_MODEL", "granite4:3b")
 HOST    = os.getenv("OLLAMA_HOST",  "http://127.0.0.1:11434")
@@ -34,7 +36,26 @@ TIMEOUT = int(os.getenv("OLLAMA_WARMUP_TIMEOUT", "300"))   # seconds
 AUTO_PULL = os.getenv("OLLAMA_WARMUP_AUTO_PULL", "1").lower() not in {"0", "false", "no"}
 WARMUP_PROMPT  = "Reply with the single word: ready"
 WARMUP_SYSTEM  = "You are a helpful assistant."
+MAX_RETRIES    = 5
+RETRY_BACKOFF  = 3          # seconds; doubles each attempt
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
+def _post_with_retry(url: str, payload: dict) -> requests.Response:
+    """POST with retries for transient connection errors during model loading."""
+    backoff = RETRY_BACKOFF
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            r = requests.post(url, json=payload, timeout=TIMEOUT)
+            r.raise_for_status()
+            return r
+        except (ConnectionError, Timeout) as exc:
+            if attempt == MAX_RETRIES:
+                raise
+            print(f"\n    ↻ connection lost (attempt {attempt}/{MAX_RETRIES}), "
+                  f"retrying in {backoff}s …", end=" ", flush=True)
+            time.sleep(backoff)
+            backoff = min(backoff * 2, 60)
+    raise RuntimeError("unreachable")  # pragma: no cover
 def _check_server() -> set[str]:
     """Verify the Ollama server is up and return known model tags."""
     try:
@@ -123,8 +144,7 @@ def _warmup_generate() -> float:
         "options": {"temperature": 0.0, "num_predict": 5},
         "stream": False,
     }
-    r = requests.post(f"{HOST}/api/generate", json=payload, timeout=TIMEOUT)
-    r.raise_for_status()
+    _post_with_retry(f"{HOST}/api/generate", payload)
     return time.perf_counter() - t0
 def _warmup_chat() -> float:
     """Warm up the /api/chat endpoint (used by common.ollama_client.chat
@@ -139,8 +159,7 @@ def _warmup_chat() -> float:
         "options": {"temperature": 0.0, "num_predict": 5},
         "stream": False,
     }
-    r = requests.post(f"{HOST}/api/chat", json=payload, timeout=TIMEOUT)
-    r.raise_for_status()
+    _post_with_retry(f"{HOST}/api/chat", payload)
     return time.perf_counter() - t0
 def _warmup_langchain() -> float:
     """Warm up langchain-ollama's ChatOllama (used by agent.py)."""
