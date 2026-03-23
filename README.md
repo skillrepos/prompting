@@ -10,7 +10,7 @@ You can use any chat interface for these labs.
 
 2. Open up the *labs.md* file so you can follow along with the labs.**
 
-![Opening labs](./images/prompt-accel23.png?raw=true "Opening labs")
+![Opening labs](./images/prompting1.png?raw=true "Opening labs")
 
 **Now, you are ready for the labs!**
 
